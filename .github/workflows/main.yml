@@ -1,0 +1,58 @@
+# Put this file at:  .github/workflows/main.yml
+#
+# Builds the mod on every push / pull request / manual run, and attaches the jar
+# to the run as an artifact. Pushing a tag that starts with "v" (e.g. v1.0.0)
+# also publishes the jar as a GitHub Release.
+
+name: Build mod
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write # only needed for the release step on tags
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v6
+
+      - name: Set up JDK
+        uses: actions/setup-java@v5
+        with:
+          java-version: '25'
+          distribution: 'microsoft'
+
+      - name: Make Gradle wrapper executable
+        run: chmod +x ./gradlew
+
+      - name: Build
+        run: ./gradlew build
+
+      - name: Collect the mod jar (skip the -sources jar)
+        run: |
+          mkdir -p dist
+          for f in build/libs/*.jar; do
+            case "$f" in *-sources.jar) ;; *) cp "$f" dist/ ;; esac
+          done
+          ls -l dist
+
+      - name: Upload jar
+        uses: actions/upload-artifact@v7
+        with:
+          name: grenade-mod
+          path: dist/*.jar
+          if-no-files-found: error
+
+      - name: Publish release (tags starting with v)
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/*.jar
