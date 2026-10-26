@@ -24,6 +24,12 @@ public class GrenadeProjectile extends ThrowableItemProjectile {
 		super(ModEntities.GRENADE, owner, level);
 	}
 
+	/** Same gravity as a splash potion (default for throwables is 0.03). */
+	@Override
+	protected double getDefaultGravity() {
+		return 0.05;
+	}
+
 	@Override
 	protected Item getDefaultItem() {
 		// What the flying grenade looks like: the armed (pinless) model.

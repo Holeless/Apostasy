@@ -26,7 +26,8 @@ public class ArmedGrenadeItem extends Item implements HeldOut {
 
 		if (!level.isClientSide) {
 			GrenadeProjectile grenade = new GrenadeProjectile(level, player);
-			grenade.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0F, 1.4F, 1.0F);
+			// Same launch values as a vanilla splash potion: -20 degree upward offset, speed 0.5, spread 1.0.
+			grenade.shootFromRotation(player, player.getXRot(), player.getYRot(), -20.0F, 0.5F, 1.0F);
 			level.addFreshEntity(grenade);
 		}
 

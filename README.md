@@ -19,4 +19,5 @@ The mod jar ends up in `build/libs/grenade-<version>.jar` (ignore the `-sources`
   `src/main/resources/assets/grenade/models/item/*.json`. Open them in Blockbench, use the Display tab, export.
 - **Arm pose / throw swing:** `src/client/java/com/grenade/client/mixin/HumanoidModelMixin.java`.
 - **Explosion size:** `EXPLOSION_POWER` in `GrenadeProjectile.java`.
-- **Throw speed:** the `1.4F` in `ArmedGrenadeItem.java`.
+- **Throw speed / arc:** the `-20.0F, 0.5F` in `ArmedGrenadeItem.java` (splash potion values); gravity is in `GrenadeProjectile.java`.
+- **Flying size:** the `ground` scale in the item models.

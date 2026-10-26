@@ -2,12 +2,15 @@ package com.grenade.item;
 
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.Vec3;
 
 /** The pinned grenade. Right-click pulls the pin and turns it into an armed grenade. */
 public class GrenadeItem extends Item implements HeldOut {
@@ -29,11 +32,12 @@ public class GrenadeItem extends Item implements HeldOut {
 				stack = armed;
 			} else {
 				stack.shrink(1);
-				giveOrDrop(player, armed);
+				if (!player.getInventory().add(armed)) {
+					player.drop(armed, false);
+				}
 			}
 
-			// The pin pops out.
-			giveOrDrop(player, new ItemStack(ModItems.GRENADE_PIN));
+			popPin(level, player);
 
 			// Small delay so a fast double-click can't pull the pin and throw in the same instant.
 			player.getCooldowns().addCooldown(ModItems.GRENADE_PINLESS, 10);
@@ -42,9 +46,18 @@ public class GrenadeItem extends Item implements HeldOut {
 		return InteractionResultHolder.consume(stack);
 	}
 
-	private static void giveOrDrop(Player player, ItemStack stack) {
-		if (!player.getInventory().add(stack)) {
-			player.drop(stack, false);
-		}
+	/** Flicks the pin out of the grenade as a real item entity that arcs up and falls to the ground. */
+	private static void popPin(Level level, Player player) {
+		Vec3 look = player.getLookAngle();
+		Vec3 start = player.getEyePosition().add(look.scale(0.5)).add(0.0, -0.35, 0.0);
+
+		ItemEntity pin = new ItemEntity(level, start.x, start.y, start.z, new ItemStack(ModItems.GRENADE_PIN));
+		RandomSource random = level.getRandom();
+		pin.setDeltaMovement(
+				look.x * 0.1 + (random.nextDouble() - 0.5) * 0.12,
+				0.25 + random.nextDouble() * 0.05,
+				look.z * 0.1 + (random.nextDouble() - 0.5) * 0.12);
+		pin.setPickUpDelay(30);
+		level.addFreshEntity(pin);
 	}
 }
