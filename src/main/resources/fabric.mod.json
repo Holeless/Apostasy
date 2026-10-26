@@ -1,0 +1,32 @@
+{
+	"schemaVersion": 1,
+	"id": "grenade",
+	"version": "${version}",
+	"name": "Grenade",
+	"description": "A throwable grenade: hold it out, pull the pin, throw it, and it explodes on impact.",
+	"authors": [
+		"You"
+	],
+	"license": "All-Rights-Reserved",
+	"environment": "*",
+	"entrypoints": {
+		"main": [
+			"com.grenade.GrenadeMod"
+		],
+		"client": [
+			"com.grenade.client.GrenadeModClient"
+		]
+	},
+	"mixins": [
+		{
+			"config": "grenade.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.16.0",
+		"minecraft": "1.21.1",
+		"java": ">=21",
+		"fabric-api": "*"
+	}
+}
